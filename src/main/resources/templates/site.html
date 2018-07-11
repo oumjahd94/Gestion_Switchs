@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymleaf-extras-springsecurity4"
+layout:decorator="template" >  
+
+<head>
+    <meta charset="utf-8" />
+   <title>Gestion des sites</title>   
+   <script th:src="@{/js/myJs.js}" src="../static/js/myJs.js"></script>   
+   <style type="text/css">
+    select {
+      width : 225px ;
+    } 
+
+   </style>
+</head>   
+
+<body class="b1">  
+<div layout:fragment="content">  
+
+  <div class="col-md-4">   
+       <br /><br /><br />
+      
+    <div class="panel panel-primary" >
+      <div class="panel-heading">Ajout d'un site</div>
+       <div class="panel-body"> 
+        <br /><br /><br /><br />
+          <form  name="myForm" th:action="@{/ajouterSite}"  method="get" class="form-horizontal" onsubmit="return validateForm()"> 
+         
+<!--           <div class="form-group">
+            <label class="control-label col-sm-3" >Ville </label>
+            <div class="col-sm-9"><input type="text" name="ville" th:value="${ville}" placeholder="Entre	r ville"  size ="27" /></div>           
+          </div>  -->  
+          
+            <div class="form-group">
+              <label class="control-label col-sm-3">Ville </label>
+               <div class="col-sm-9" >
+                 <select name="ville">               
+<!--                     <option th:each="vi:${listeVilles}" th:text="${vi}" th:value="${vi}" ></option>   
+ -->		       		    
+ 		                    <option value="El Jadida" >El Jadida</option>                            
+                            <option value="Casablanca">Casablanca</option>
+ 		                    <option value="Boucraâ">Boucraâ</option>
+ 		                    <option value="Ben guérir">Ben guérir</option>
+ 		                    <option value="Safi">Safi</option> 
+ 		                    <option value="Khouribga">Khouribga</option>
+ 		                    <option value="Youssofiya">Youssofiya</option>
+ 		                    <option value="Laayoune">Laayoune</option> 		                    
+                </select>
+		      </div>            
+		    </div>     
+            
+            <div class="form-group">
+              <label class="control-label col-sm-3">URL </label>
+               <div class="col-sm-9"><input type ="url" name="url" th:value="${url}" placeholder="Entrer ex : http://www.site.com" size ="27" required="required"/></div>
+           </div>  
+           <br/>
+           <button class="btn btn-primary" type="submit" style="margin-left:40px ;" ><span class="glyphicon glyphicon-plus"></span> Ajouter</button> 
+           <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span> Annuler</button>   
+             
+            <br /><br /><br /><br /><br /><br />
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>    
+     
+   <!--   <div class="panel panel-info">
+      <div class="panel-heading">Nouveau mot de passe</div>
+       <div class="panel-body">
+           <form action="" method="get">   
+           
+             <div>
+              <label>Choix d'utilisateur :</label>
+               <select name="user">             
+		         <option value ="med" >oumjahd</option>
+			     <option value="hdaui">Hidaui</option>                   
+		       </select>
+            </div>  
+            
+            <div>
+              <label>Nouveau :</label>
+                <input type="text" name="nouv" />F
+            </div> 
+            
+            <div>
+              <label>Confirmer :</label>
+                <input type="text" name="confirm"/>
+            </div>            
+           <button class="btn btn-primary" type="submit">Valider</button>                            
+           </form> 
+       </div> 
+     </div>  -->
+     
+       
+  </div>    
+  
+  
+    <div class="col-md-8">   
+    
+       <form class="navbar-form navbar-left" th:action="@{/listeSites}" method="get">
+         <div class="input-group">	
+             <input type="text" class="form-control" name="motCle" placeholder="Search" />
+              <div class="input-group-btn">
+                 <button class="btn btn-default" type="submit">
+                       <i class="glyphicon glyphicon-search"></i>
+                </button>
+             </div>
+         </div>
+       </form>   
+<!--       <div>
+                <input type="text" class="rech" name="ville" placeholder ="Recherche par ville" /> 
+      </div>  --> 
+      <br /><br /><br />
+      <div class="panel panel-primary">
+      <div class="panel-heading">Liste des sites </div>
+       <div class="panel-body"> 
+       
+          <table class="table table-hover"> 
+          
+           <tr>
+             <th>Ville</th><th>URL</th><th>Actions</th>
+           </tr> 
+           
+          <tr th:each="s:${listeS}">
+            <td th:text="${s.Ville}"></td>
+            <td th:text="${s.Url}"></td>                   
+            <td>
+             <a class="btn btn-info" th:href="@{/listeSites(ville=${s.Ville},url=${s.Url})}" onclick="return confirmer('Voulez-vous vraiment modifier les données de ce site')"><span class="glyphicon glyphicon-pencil"></span></a>   
+             <a class="btn btn-danger"  th:href="@{/SupprSite(ville=${s.Ville})}" onclick="return confirmer('Voulez-vous vraiment supprimer ce site')"><span class="glyphicon glyphicon-trash"></span></a> 
+             <a class="btn btn-primary" th:href="@{/listeSites(ville=${s.Ville})}" ><span class="glyphicon glyphicon-list-alt"></span></a>        
+            </td> 
+<!--             <td > <a class="btn btn-primary" th:href="@{/ModifUser(nomUser=${u.Nom},prenomUser=${u.Prenom},pwdUser=${u.Mdp},role=${u.Type})}">Modifier</a></td> 
+ -->            
+          </tr>
+         </table>   
+         
+         <div class="container">
+           <ul class="nav nav-pills">
+              <li th:each="p,status:${pages}"> 
+                   <a th:href="@{/listeSites(ville= ${Ville},page=${status.index})}" th:text="${status.index}"></a>
+              </li>
+           </ul>
+        </div> 
+         
+       </div> 
+      </div> 
+  </div> 
+  
+  
+  <div class="col-md-12"> 
+          
+     <div class="panel panel-primary" th:if="${site}">
+      <div class="panel-heading">Détails sur site</div>
+       <div class="panel-body">
+        <div>
+         <label class="cl">La Ville de site :</label>
+         <label th:text="${site.Ville}"></label>
+       </div>    
+       
+       <div>
+         <label class="cl">l'URL de site :</label>
+         <label th:text="${site.Url}"></label>  
+       </div>           
+                 
+       <div>
+         <label class="cl">Nombre des utilisateurs de ce site :</label>
+         <label th:text="${nbreUsers}"></label>  
+       </div> 
+       
+       <div>
+         <label class="cl">Nombre de bâtiments de ce site  :</label>
+         <label th:text="${nbreBat}"></label>  
+       </div>    
+                                
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>   
+ </div>   
+ 
+  
+ </div>
+</body>
+</html>

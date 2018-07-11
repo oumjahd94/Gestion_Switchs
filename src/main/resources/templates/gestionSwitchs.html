@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymleaf-extras-springsecurity4"
+layout:decorator="template" >  
+
+<head>
+    <meta charset="utf-8" />
+   <title>Gestion des sites</title> 
+</head>   
+
+<body background="../static/images/Batiment-521-vue-1.jpg">  
+<div layout:fragment="content">  
+  
+    <div class="col-md-8"> 
+       <form class="navbar-form navbar-left" action="" method="post">
+         <div class="input-group">
+             <input type="text" class="form-control" name="ville" placeholder="Search" />
+              <div class="input-group-btn">
+                 <button class="btn btn-default" type="submit">
+                       <i class="glyphicon glyphicon-search"></i>
+                </button>
+             </div>
+         </div>
+       </form> 
+       
+      <br /> <br /> <br /> 
+      <br />
+      <div class="panel panel-primary">
+      <div class="panel-heading">Liste des batîments </div>
+       <div class="panel-body"> 
+       
+          <table class="table table-hover"> 
+          
+           <tr>
+             <th>Dénomination</th><th>Site</th><th>Actions</th>
+           </tr> 
+           
+          <tr th:each="b:${listeB}">
+            <td th:text="${b.Denomination}"></td>
+            <td th:text="${b.site.Ville}"></td>                   
+            <td>
+             <a class="btn btn-info" th:href="@{/ModifBatiment(denomination=${b.Denomination},site=${b.site.Ville})}"><span class="glyphicon glyphicon-pencil"></span></a>   
+             <a class="btn btn-danger"  th:href="@{/SupprBatiment(denomination=${b.Denomination})}"><span class="glyphicon glyphicon-trash"></span></a> 
+             <a class="btn btn-primary" th:href="@{/consulterBatiment(denomination=${b.Denomination})}" ><span class="glyphicon glyphicon-list-alt"></span></a>        
+            </td>             
+          </tr>
+         </table>   
+         
+         <div class="container">
+           <ul class="nav nav-pills">
+              <li th:each="p,status:${pages}"> 
+                   <a th:href="@{/listeBatiments(denomination= ${Denomination},page=${status.index})}" th:text="${status.index}"></a>
+              </li>
+           </ul>
+        </div> 
+         
+       </div> 
+      </div> 
+  </div> 
+  
+    <div class="col-md-4">   
+       <br /><br />  <br /><br />
+      
+    <div class="panel panel-primary" >
+      <div class="panel-heading">Ajout d'un batîment</div>
+       <div class="panel-body"> 
+        <br /><br />
+          <form  th:action="@{/ajouterBatiment}"  method="get" class="form-horizontal" > 
+         
+          <div class="form-group">
+            <label class="control-label col-sm-3" >Dénomination </label>
+            <div class="col-sm-9"><input type="text" name="denom" th:value="${denom}" placeholder="Entrer batîment"  size ="27" /></div>           
+          </div>      
+            
+            <div class="form-group">
+              <label class="control-label col-sm-3">Site </label>
+               <div class="col-sm-7">
+                 <select name="site" >               
+                    <option th:each="site:${collS}" th:text="${site.Ville}"  th:value="${site.Ville}"></option>   
+		        </select>
+		      </div>            
+		    </div>  
+           
+           <button class="btn btn-primary" type="submit" ><span class="glyphicon glyphicon-ok"></span>  Valider</button>   
+            <br /><br /><br /><br /><br /><br /><br /><br />
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>    
+    
+     
+       
+  </div>    
+  
+  <div class="col-md-12"> 
+          
+     <div class="panel panel-primary" th:if="${batiment}">
+      <div class="panel-heading">Détails sur switch</div>
+       <div class="panel-body">
+        <div>
+         <label>Dénomination :</label>
+         <label th:text="${batiment.Denomination}"></label>
+       </div>    
+       
+       <div>
+         <label>Site :</label>
+         <label th:text="${batiment.site.Ville}"></label>   
+       </div>           
+                     
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>   
+ </div>   
+ 
+  
+ </div>
+</body>
+</html>

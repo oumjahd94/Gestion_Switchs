@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymleaf-extras-springsecurity4"
+layout:decorator="template" >  
+
+<head>
+    <meta charset="utf-8" />
+   <title>Gestion des VLANs</title>  
+   <script th:src="@{/js/myJs.js}" src="../static/js/myJs.js"></script>  
+   <style type="text/css">
+    select {
+      width : 158px ;
+    }
+   </style>
+</head>  
+
+<body class="vl"> 
+ <div layout:fragment="content">  
+
+  <div class="col-md-7"> 
+       <form class="navbar-form navbar-left" th:action="${listeVlans}" method="get">
+         <div class="input-group">
+             <input type="text" class="form-control" name="motCle" placeholder="Search" />
+              <div class="input-group-btn">
+                 <button class="btn btn-default" type="submit">	
+                       <i class="glyphicon glyphicon-search"></i>
+                </button>
+             </div>
+         </div>
+       </form> 
+       
+      <br /> <br /> <br /> 
+      <br />
+      <div class="panel panel-primary">
+      <div class="panel-heading">Liste des VLANs </div>
+       <div class="panel-body"> 
+       
+          <table class="table table-hover"> 
+          
+           <tr>
+             <th>Nom de vlan</th><th>Niveau</th><th>Switch</th><th>Actions</th>
+           </tr> 
+           
+          <tr th:each="V:${listeVlan}"> 
+          
+            <td th:text="${V.Nom}"></td>  
+            <td th:text="${V.Niveau}"></td>    
+            <td th:text="${V.Sw.Nom}"></td>                                  
+            <td>
+             <a class="btn btn-info" th:href="@{/listeVlans(nom=${V.Nom},niveau=${V.Niveau},commutateur=${V.Sw.Nom})}" onclick="return confirmer('Voulez-vous vraiment modifier les données de ce VLAN ?')"><span class="glyphicon glyphicon-pencil"></span></a>   
+             <a class="btn btn-danger"  th:href="@{/SupprVlan(nom=${V.Nom})}" onclick="return confirmer('Voulez-vous vraiment supprimer les données de ce VLAN ?')"><span class="glyphicon glyphicon-trash"></span></a> 
+             <a class="btn btn-primary" th:href="@{/listeVlans(nom=${V.Nom})}"><span class="glyphicon glyphicon-list-alt"></span></a>        
+            </td>             
+          </tr>
+         </table>   
+         
+         <div class="container">
+           <ul class="nav nav-pills">
+              <li th:each="p,status:${pages}"> 
+                   <a th:href="@{/listeVlans(nom= ${Nom}, page=${status.index})}" th:text="${status.index}"></a>
+              </li>
+           </ul>
+        </div>     
+         
+       </div> 
+      </div> 
+  </div>   
+  
+  
+  <div class="col-md-5">   
+       <br /><br />  <br /><br />
+      
+    <div class="panel panel-primary" >
+      <div class="panel-heading">Création d'un vlan</div>
+       <div class="panel-body"> 
+        <br /><br />
+          <form  th:action="@{/ajouterVlan}"  method="get" class="form-horizontal" > 
+         
+          <div class="form-group">
+            <label class="control-label col-sm-4" >Nom de VLAN </label>
+            <div class="col-sm-7"><input type="text" name="nom" th:value="${nom}" placeholder="Entrer nom vlan"  size ="18" required="required"/></div>           
+          </div>      
+            
+            <div class="form-group">
+              <label class="control-label col-sm-4">Niveau </label>
+               <div class="col-sm-7">
+                 <select name="niveau">               
+                    <option value="1" >Niveau 1</option> 
+                    <option value="2" >Niveau 2</option>                        
+                    <option value="3" >Niveau 3</option>                                                                      
+		        </select>
+		      </div>                
+		    </div>   
+		    
+           <div class="form-group">
+              <label class="control-label col-sm-4">Créer sur le switch </label>
+               <div class="col-sm-7">
+                 <select name="commutateur">               
+                    <option th:each=" commutateur:${collSwitches}" th:text="${commutateur.Nom}" ></option>   
+		        </select>
+		      </div>            
+		    </div>    
+		    
+           <br />  
+           <button class="btn btn-primary" type="submit" ><span class="glyphicon glyphicon-ok"></span>  Valider</button>   
+           <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span>  Annuler</button>   
+            
+            <br /><br /><br /><br /><br/>
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>         
+ </div>
+  
+ 
+  <div class="col-md-6">         
+    <div class="panel panel-primary" >
+      <div class="panel-heading">Affectation des switches</div>
+       <div class="panel-body"> 
+                 
+          <form  th:action="@{/AffecterVlan}" method="get" class="form-horizontal" > 
+
+            <div class="form-group">
+              <label class="control-label col-sm-5">Liste des VLANs </label>
+               <div class="col-sfm-7">
+                 <select name="vlan">               
+                    <option th:each=" vlan:${collVlan}" th:text="${vlan.Nom}" ></option>   
+		        </select>          
+		      </div>            
+		    </div> 
+		            
+            <div class="form-group">
+              <label class="control-label col-sm-5">Liste des Bâtiments </label>
+               <div class="col-sfm-7">
+                 <select name="batiment">               
+                    <option th:each=" batiment:${collBat}" th:text="${batiment.Denomination}" ></option>   
+		        </select>          
+		      </div>            
+		    </div>   
+                     	               
+           <button class="btn btn-primary" type="submit" ><span class="glyphicon glyphicon-ok"></span> Affecter</button> 
+           <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span> Annuler</button>   
+             
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>        
+  </div>     
+  
+  
+ <div class="col-md-6"> 
+          
+     <div class="panel panel-primary" th:if="${sw}">
+      <div class="panel-heading">Détails sur un VLAN</div>
+       <div class="panel-body">
+        <div>
+         <label class="cl">Nom de VLAN:</label>
+         <label th:text="${sw.Nom}"></label>
+       </div>    
+       
+       <div>
+         <label class="cl">Niveau  :</label>
+         <label th:text="${sw.Niveau}"></label>   
+       </div>   
+
+       <div>
+         <label class="cl">Switch sur lequel il est crée  :</label>
+         <label th:text="${sw.Sw.Nom}"></label>   
+       </div>  
+                      
+       <div>
+         <label class="cl">Nombre de bâtiments à lesquelles il est affecté  :</label>
+<!--          <label th:text="${nbre}"></label>     
+ -->   </div>  
+
+                   
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div> 
+      <br />
+     </div>
+    </div>   
+ </div>  
+</div> 
+</body>
+</html>

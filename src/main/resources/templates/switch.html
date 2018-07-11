@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymleaf-extras-springsecurity4"
+layout:decorator="template" >  
+
+<head>
+    <meta charset="utf-8" />
+   <title>Gestion des switchs</title> 
+    <script th:src="@{/js/myJs.js}" src="../static/js/myJs.js"></script>  
+   <style type="text/css">
+    select {
+      width : 171px ;
+    } 
+    
+   </style>
+</head>  
+
+<body class="b1">  
+<div layout:fragment="content">  
+    <div class="col-md-12"> 
+    
+       <form class="navbar-form navbar-left" th:action="@{/listeSwitches}" method="get">
+         <div class="input-group">
+             <input type="text" class="form-control" name="motCle" placeholder="Search" />
+              <div class="input-group-btn">
+                 <button class="btn btn-default" type="submit">
+                       <i class="glyphicon glyphicon-search"></i>
+                </button>
+             </div>
+         </div>
+       </form> 
+       
+      <br /> <br /> <br /> 
+      <br />
+      <div class="panel panel-primary">
+      <div class="panel-heading">Gestion de l'inventaire </div>
+       <div class="panel-body"> 
+       
+          <table class="table table-hover"> 
+          
+           <tr>
+             <th>Nom de switch</th><th>Marque</th><th>Série</th><th>Nombre de ports</th><th>Niveau</th><th>Local technique</th> <th><center>Actions</center></th>
+           </tr> 
+           
+          <tr th:each="S:${listeSw}"> 
+          
+            <td th:text="${S.Nom}"></td>
+            <td th:text="${S.Marque}"></td>  
+            <td th:text="${S.Serie}"></td>   
+            <td th:text="${S.NbrePorts}"></td>   
+            <td th:text="${S.niveau}"></td>                              
+            <td th:text="${S.localTechnique.Nom}"></td>                                                                      
+                                        
+            <td>
+             <a class="btn btn-info" th:href="@{/listeSwitches(serie=${S.Serie},nom=${S.Nom},marque=${S.Marque},nbre= ${S.NbrePorts},niveau=${S.niveau}, locale =${S.localTechnique.Nom})}" onclick="return confirmer('Voulez-vous vraiment changer ce switch')"><span class="glyphicon glyphicon-pencil">Changer</span></a>   
+             <a class="btn btn-danger"  th:href="@{/SupprSwitch(serie=${S.Serie})}" onclick="return confirmer('Voulez-vous vraiment supprimer ce switch')"><span class="glyphicon glyphicon-trash"></span> Enlever</a> 
+             <a class="btn btn-primary" th:href="@{/listeSwitches(serie=${S.Serie})}" ><span class="glyphicon glyphicon-list-alt"></span> Editer</a>        
+             <a class="btn btn-success" th:href="@{/listeSwitches(serie=${S.Serie},deplacer=${'active'},local=${localeSw})}"><span class="glyphicon glyphicon-move"></span> Déplacer          
+             </a>             
+            </td>  
+            <!-- <td  th:text="${'test'}"></td>     -->
+              <!-- style="visibility:hidden ;" -->          
+          </tr>
+         </table>   
+         
+         <div class="container">
+           <ul class="nav nav-pills">
+              <li th:each="p,status:${pages}"> 
+                   <a th:href="@{/listeSwitches(nom= ${Nom}, page=${status.index})}" th:text="${status.index}"></a>
+              </li>
+           </ul>
+        </div> 
+         
+       </div> 
+      </div> 
+  </div>   
+
+   <div class="col-md-12"> 
+          
+     <div class="panel panel-primary" th:if="${swit}">
+      <div class="panel-heading">Détails sur un switch</div>
+       <div class="panel-body">
+        <div>
+         <label class="cl">Nom de switch:</label>
+         <label th:text="${swit.Nom}"></label>
+       </div>    
+       
+       <div>
+         <label class="cl">Marque  :</label>
+         <label th:text="${swit.Marque}"></label>   
+       </div>   
+
+       <div>
+         <label class="cl">Série  :</label>
+         <label th:text="${swit.Serie}"></label>   
+       </div>  
+                      
+       <div>
+         <label class="cl">Nombre des ports  :</label>
+         <label th:text="${swit.NbrePorts}"></label>     
+       </div>  
+       <div>
+         <label class="cl">Niveau  :</label>
+         <label th:text="${swit.Niveau}"></label>     
+       </div>   
+       <div>
+         <label class="cl">Locale  :</label>
+         <label th:text="${swit.localTechnique.Nom}"></label>     
+       </div>        
+                   
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>   
+ </div>   
+ 
+       <div class="col-md-12">  
+           <div class="panel panel-primary"  th:if="${dp}">
+             <div class="panel-heading">Déplacement de <span th:text="${dp.Nom}"></span></div>
+              <div class="panel-body"> 
+                 <br/><br/><br/>
+                 <form  th:action="@{/deplacerSW}"  method="get" class="form-horizontal" > 
+                    Choisissez le locale de destination <br /> 
+                           
+                         <select name="localeSW" data-live-search="true" data-live-search-style="startsWith" >  
+                               <option th:each="local:${collecLocaux}" th:text="${local.Nom}" ></option>      
+                         </select>    	
+                         <input style="visibility:hidden ;" type="text" name="serie" th:value="${dp.Serie}" />  
+                         
+                        <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span>  Valider</button>                       
+                                                      
+                  </form>    
+              <br/><br/>
+              </div>
+           </div>
+    </div>    
+ 
+  
+  <div class="col-md-6"> 
+      <div class="panel panel-primary">
+      <div class="panel-heading">Ajouter un nouveau switch</div>
+       <div class="panel-body">
+        <form  th:action="@{/ajouterSwitch}"  method="get" class="form-horizontal" >    
+
+          <div class="form-group"> 
+            <label class="control-label col-sm-3" >Numéro de série </label>
+            <div class="col-sm-9"><input type="text" name="serie" th:value="${serie}" placeholder="Entrer la série"  size ="21" required="required"/></div>           
+          </div>  
+                     
+          <div class="form-group">
+            <label class="control-label col-sm-3" >Nom </label>
+            <div class="col-sm-9"><input type="text" name="nom" th:value="${nom}" placeholder="Entrer nom switch"  size ="21" required="required"/></div>           
+          </div>   
+            
+          <div class="form-group">
+            <label class="control-label col-sm-3" >Marque </label>
+            <div class="col-sm-9"><input type="text" name="marque" th:value="${marque}" placeholder="Entrer la marque"  size ="21" required="required"/></div>           
+          </div>  
+
+
+            <div class="form-group">
+              <label class="control-label col-sm-3">Nombre de ports </label>
+               <div class="col-sm-7">
+                 <select name="nbreport" data-live-search="true" data-live-search-style="startsWith">     
+                    <option value="8" >8</option>                                                                                                     
+                    <option value="16" >16</option> 
+                    <option value="28" >28</option>                        
+                    <option value="48" >48</option>  
+                    <option value="96" >96</option>                                                                                                                                                              
+		        </select>
+		      </div>                
+		    </div>
+
+            <div class="form-group">
+              <label class="control-label col-sm-3">Niveau </label>
+               <div class="col-sm-7">
+                 <select name="niveau">     
+                    <option value="Supérieur" >Supérieur</option>                                                                                                     
+                    <option value="Intermédiare" >Intermédiare</option> 
+                    <option value="Bas" >Bas</option>                                                                                                                                                                                        
+		        </select>
+		      </div>                
+		    </div> 
+		    
+            <div class="form-group">
+              <label class="control-label col-sm-3">Sélectionner le locale</label>
+               <div class="col-sm-7">
+                 <select name="locale">               
+                    <option th:each=" local:${collecLocaux}" th:text="${local.Nom}" ></option>      
+                </select>
+		      </div>            
+		    </div> 
+		    
+           <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span>  Valider</button>                       
+           <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span>  Annuler</button>             
+         </form>  
+       </div>
+      </div>    
+      
+  </div>
+
+
+
+
+<!--   <div class="col-md-4"> 
+      <div class="panel panel-primary">
+      <div class="panel-heading">Affichage des données de l'user conecté</div>
+       <div class="panel-body">  
+          l'utilisater connecté est :  
+            <p th:text="${userSession}"></p>
+       </div> 
+      </div> 
+  </div>   -->
+  
+  
+     
+<div class="col-md-6">         
+    <div class="panel panel-primary" > 
+      <div class="panel-heading">Relations des switches</div>         
+       <div class="panel-body"> 
+           <br/> <br/>       
+          <form  name="swc" th:action="@{/stackerSwitches}" method="get" class="form-horizontal" onsubmit="return validerSwitches()"> 
+
+           <div class="form-group">
+              <label class="control-label col-sm-3">Switch N°2 </label>
+               <div class="col-sm-7">
+                 <select name="sw1">               
+                    <option th:each=" commutateur:${collSwitches}" th:text="${commutateur.Nom}" th:value="${commutateur.Serie}"  ></option>   
+		        </select>
+		      </div>            
+		    </div>    
+		    
+           <div class="form-group">
+              <label class="control-label col-sm-3">Swtich N°1 </label>    
+               <div class="col-sm-7">
+                 <select name="sw2">               
+                    <option th:each=" commutateur:${collSwitches}" th:text="${commutateur.Nom}" th:value="${commutateur.Serie}" ></option>   
+		        </select>
+		      </div>            
+		    </div>  		    
+            <br/> <br/>          	               
+           <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-random"></span>  Lier</button> 
+           <button name="stk" class="btn btn-primary" type="submit" value="option2" ><span class="glyphicon glyphicon-retweet"></span>  Stacker</button>           
+           <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-ban-circle"></span>  Annuler</button>   
+             
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div> 
+      <br/> <br/>         <br/> <br/>     
+     </div>
+    </div>        
+  </div>     
+
+
+  
+</div>
+</body>
+</html>

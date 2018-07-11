@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymleaf-extras-springsecurity4"
+layout:decorator="template" >  
+
+<head>
+    <meta charset="utf-8" />
+   <title>Gestion des utilisateurs</title>  
+   
+   <script th:src="@{/js/myJs.js}" src="../static/js/myJs.js"></script>  
+  
+   <style type="text/css">
+    select {
+      width : 173px ;
+    }
+   </style>
+</head>   
+
+<body background="../static/images/bk.png" class="user"> 
+ <div layout:fragment="content">  
+
+   <div class="col-md-4">   
+       <br /><br /><br />
+      
+      <div class="panel panel-primary" >
+       <div class="panel-heading">Ajout d'un utilisateur</div>
+        <div class="panel-body"> 
+       
+         <form  th:action="@{/ajouterUser}"  method="get" class="form-horizontal" > 
+         
+          <div class="form-group">
+            <label class="control-label col-sm-5" >Nom </label>
+            <div class="col-sm-7"><input type="text" name="nomUser" th:value="${nomUser}" placeholder="Entrer nom"  required="required" /></div>           
+          </div>      
+            
+            <div class="form-group">
+              <label class="control-label col-sm-5">Prénom </label>
+               <div class="col-sm-7"><input type="text" name="prenomUser" th:value="${prenomUser}" placeholder="Entrer prénom" required="required" /></div>
+           </div>  
+           
+            <div class="form-group">
+              <label class="control-label col-sm-5">Mot de passe </label>
+               <div class="col-sm-7"><input type="password" name="pwdUser"  th:value="${pwdUser}" placeholder="Entrer password" required="required" /></div>
+           </div>                      
+           
+           <div class="form-group"> 
+              <label class="control-label col-sm-5">Privilège  </label>   
+             <div class="col-sm-1"><input type="radio" name="role" value="GUEST" checked="checked"  onclick="javascript:yesnoCheck();"/></div>                
+             <label class="control-label col-sm-2" >Guest</label>                      
+             <div class="col-sm-1"><input type="radio" name="role" value="ADMIN"  onclick="javascript:yesnoCheck();"/></div>             
+             <label class="control-label col-sm-0.5">Admin</label>   
+
+           </div>  
+             
+           <div class="form-group">
+              <label class="control-label col-sm-5">Site </label>              
+               <div class="col-sm-7"><select name="site" th:value="${site}">               
+                    <option th:each="site:${collS}" th:text="${site.Ville}"  th:value="${site.Ville}"></option>                       
+		       </select></div>          
+           </div>   
+           
+           <div class="form-group">
+              <label class="control-label col-sm-5" >Email </label>
+               <div class="col-sm-7"><input type="email" name="emailUser"  th:value="${emailUser}" placeholder="ex :mail@example.com" required="required" /></div>
+           </div>   
+           
+            <div class="form-group">
+              <label class="control-label col-sm-5">Tél </label>
+               <div class="col-sm-7"><input type="tel" name="telUser"  th:value="${telUser}" placeholder="06xxxxxxxx" required="required" pattern="^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$"/></div>
+           </div>   
+            
+            <div class="form-group">
+              <label class="control-label col-sm-5">Fonction </label>
+               <div class="col-sm-7">
+                  <select name="fctUser" >               		       		    
+ 		                    <option value="Developpeur"	>Developpeur</option>                            
+                            <option value="Technicien">Technicien</option>
+ 		                    <option value="Comptable">Comptable</option>
+ 		                    <option value="Ingénieur">Ingénieur</option>
+ 		                    <option value="Directeur">Directeur</option>
+ 		                    <option value="Agent">Agent</option> 		                    
+                 </select>             
+              </div>
+           </div>   
+               
+           <br/>                                           
+           <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-ok"></span>  Valider</button>   
+            <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span>  Annuler</button>   
+           
+            <br /><br />
+        </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>    
+     
+   <!--   <div class="panel panel-info">
+      <div class="panel-heading">Nouveau mot de passe</div>
+       <div class="panel-body">
+           <form action="" method="get">   
+           
+             <div>
+              <label>Choix d'utilisateur :</label>
+               <select name="user">             
+		         <option value ="med" >oumjahd</option>
+			     <option value="hdaui">Hidaui</option>                   
+		       </select>
+            </div>  
+            
+            <div>
+              <label>Nouveau :</label>
+                <input type="text" name="nouv" />F
+            </div> 
+            
+            <div>
+              <label>Confirmer :</label>
+                <input type="text" name="confirm"/>
+            </div>            
+           <button class="btn btn-primary" type="submit">Valider</button>                            
+           </form> 
+       </div> 
+     </div>  -->
+     
+       
+  </div>    
+  
+  
+    <div class="col-md-8"> 
+       <form class="navbar-form navbar-left" th:action="${ListeUsers}" method="get">
+         <div class="input-group">
+             <input type="text" class="form-control" name="motCle" placeholder="Search" />
+              <div class="input-group-btn">
+                 <button class="btn btn-default" type="submit">
+                       <i class="glyphicon glyphicon-search"></i>
+                </button>
+             </div>
+         </div>
+       </form> 
+       
+      <br /> <br /> <br />
+     <div class="panel panel-primary">
+      <div class="panel-heading">Liste des utilisateurs</div>
+       <div class="panel-body"> 
+       
+          <table class="table table-hover" > 
+          
+           <tr>
+             <th>Nom</th><th>Prenom</th><th>Site</th><th>Email</th><th>Fonction</th><th>Statut</th><th><center>Actions</center></th>
+           </tr> 
+           
+          <tr th:each="u:${listeUsers}">
+            <td th:text="${u.Nom}"></td>
+            <td th:text="${u.Prenom}"></td>
+            <td th:text="${u.site.Ville}"></td>              
+            <td th:text="${u.Email}"></td> 
+            <td th:text="${u.Fonction}"></td>   
+         
+            <td th:if="${u.Statut}">           
+                 <a class="btn btn-success" th:href="@{/updateUser(nomUser=${u.Nom},etat=${false})}" onclick="return confirmer('Voulez-vous vraiment désactiver cet utilisateur ?')" title="Désactiver"><span class="glyphicon glyphicon-eye-open"> Active</span></a>            
+            </td> 
+            
+            <td th:unless="${u.Statut}">           
+                 <a class="btn btn-warning" th:href="@{/updateUser(nomUser=${u.Nom},etat=${true})}" onclick="return confirmer('Voulez-vous vraiment activer cet utilisateur ?')" title="Activer"><span class="glyphicon glyphicon-eye-close"></span>  Inactive</a>            
+            </td> 
+             
+            <td>
+             <a class="btn btn-info" th:href="@{/listeUser(nomUser=${u.Nom},prenomUser=${u.Prenom},pwdUser=${u.Mdp},emailUser=${u.Email}, telUser=${u.Tel}, fctUser=${u.Fonction}, site=${u.site.Ville})}" onclick="return confirmer('Voulez-vous vraiment modifier cet utilisateur ?')" title="Modifier"><span class="glyphicon glyphicon-pencil"></span></a>   
+             <a class="btn btn-danger"  th:href="@{/SupprUser(nomUser=${u.Nom})}" onclick="return confirmer('Voulez-vous vraiment supprimer cet utilisateur ?')" title="Supprimer"><span class="glyphicon glyphicon-trash"></span></a> 
+             <a class="btn btn-primary" th:href="@{/listeUser(nomUser=${u.Nom})}" title="Editer"><span class="glyphicon glyphicon-list-alt"></span></a>        
+            </td> 
+<!--             <td > <a class="btn btn-primary" th:href="@{/ModifUser(nomUser=${u.Nom},prenomUser=${u.Prenom},pwdUser=${u.Mdp},role=${u.Type})}">Modifier</a></td> 
+ -->            
+         </tr>
+       </table>   
+         
+         <div class="container">
+           <ul class="nav nav-pills">
+           <!-- on déclare ici satuts a coté de p pour manipuler un tableau avec des index -->
+              <li th:each="p,status:${pages}">
+               <a th:href="@{/listeUser(Nom=${Nom},page=${status.index})}" th:text="${status.index}"></a>
+              </li>
+           </ul>
+        </div> 
+         
+       </div> 
+      </div> 
+  </div> 
+  
+  
+  <div class="col-md-12"> 
+          
+     <div class="panel panel-primary" th:if="${user}">
+      <div class="panel-heading">Détails sur l'utilisateur</div>
+       <div class="panel-body">
+        <div>
+         <label>Nom :</label>
+         <label th:text="${user.Nom}"></label>
+       </div>    
+       
+       <div>
+         <label>Prénom :</label>
+         <label th:text="${user.Prenom}"></label>
+       </div>  
+          
+       <div>
+         <label>Site :</label>
+         <label th:text="${user.site.Ville}"></label>                
+       </div>  
+              
+<!--        <div>
+         <label>Type :</label>
+         <label th:text="${user.Type}"></label>
+       </div>  --> 
+       
+       <div>
+         <label>Email :</label>
+         <label th:text="${user.Email}"></label>                
+       </div>    
+       
+       <div>
+         <label>Téléphone :</label>
+         <label th:text="${user.Tel}"></label>                
+       </div>     
+          
+       <div>
+          <div th:if="${user.Statut}">
+                       <label>Statut :</label>
+                       <label th:text="${'Active'}"></label>
+          </div>
+          <div th:unless="${user.Statut}">
+              <label>Statut :</label>
+               <label th:text="${'Non Active'}"></label>
+         </div>
+      </div>
+              
+       <div>
+         <label>Fonction :</label>
+         <label th:text="${user.Fonction}"></label>                
+       </div>        
+                     
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>   
+ </div>   
+  
+
+  
+  
+ </div>
+</body>
+</html>

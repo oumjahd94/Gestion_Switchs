@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymleaf-extras-springsecurity4"
+layout:decorator="template" >  
+
+<head>
+    <meta charset="utf-8" />
+   <title>Gestion des locaux techniques</title>  
+   <script th:src="@{/js/myJs.js}" src="../static/js/myJs.js"></script>  
+   <style type="text/css">
+    select {
+      width : 174px ;
+    }
+   </style>
+</head>     
+
+<body class="b1">  
+<div layout:fragment="content">  
+  
+    <div class="col-md-8"> 
+       <form class="navbar-form navbar-left" th:action="${listeLocaux}" method="get">
+         <div class="input-group">
+             <input type="text" class="form-control" name="motCle" placeholder="Search" />
+              <div class="input-group-btn">
+                 <button class="btn btn-default" type="submit">
+                       <i class="glyphicon glyphicon-search"></i>
+                </button>
+             </div>
+         </div>
+       </form> 
+       
+      <br /> <br /> <br /> 
+      <br />
+      <div class="panel panel-primary">
+      <div class="panel-heading">Liste des locaux techniques </div>
+       <div class="panel-body"> 
+       
+          <table class="table table-hover"> 
+          
+           <tr>
+             <th>Nom de locale</th><th>Bâtiment</th><th>Etage</th><th>Actions</th>
+           </tr> 
+           
+          <tr th:each="l:${listeLoc}">
+            <td th:text="${l.Nom}"></td>
+            <td th:text="${l.batiment.Denomination}"></td>  
+            <td th:text="${l.Etage}"></td>                              
+            <td>
+             <a class="btn btn-info" th:href="@{/listeLocaux(nom=${l.Nom},batiment=${l.batiment.Denomination},etage=${l.Etage})}" onclick="return confirmer('Voulez-vous vraiment modifier les données de ce local technique')"><span class="glyphicon glyphicon-pencil"></span></a>   
+             <a class="btn btn-danger"  th:href="@{/SupprLocal(nom=${l.Nom})}" onclick="return confirmer('Voulez-vous vraiment supprimer les données de ce local technique')"><span class="glyphicon glyphicon-trash"></span></a> 
+             <a class="btn btn-primary" th:href="@{/listeLocaux(nom=${l.Nom})}"><span class="glyphicon glyphicon-list-alt"></span></a>        
+            </td>             
+          </tr>
+         </table>   
+         
+         <div class="container">
+           <ul class="nav nav-pills">
+              <li th:each="p,status:${pages}"> 
+                   <a th:href="@{/listeLocaux(nom= ${Nom}, page=${status.index})}" th:text="${status.index}"></a>
+              </li>
+           </ul>
+        </div> 
+         
+       </div> 
+      </div> 
+  </div> 
+  
+    <div class="col-md-4">   
+       <br /><br />  <br /><br />
+      
+    <div class="panel panel-primary" >
+      <div class="panel-heading">Ajout d'un locale technique</div>
+       <div class="panel-body"> 
+        <br /><br />
+          <form  th:action="@{/ajouterLocal}"  method="get" class="form-horizontal" name="ajouterL" > 
+         
+          <div class="form-group">
+            <label class="control-label col-sm-3" >Nom </label>
+            <div class="col-sm-9"><input type="text" name="nom" th:value="${nom}" placeholder="Entrer nom local"  size ="20" required="required"/></div>           
+          </div>      
+            
+            <div class="form-group">
+              <label class="control-label col-sm-3">Batiment </label>
+               <div class="col-sm-7">
+                 <select name="batiment">               
+                    <option th:each=" batiment:${collBat}" th:text="${batiment.Denomination}" ></option>   
+		        </select>
+		      </div>            
+		    </div>   
+		    
+            <div class="form-group">
+              <label class="control-label col-sm-3" >Etage </label>
+              <div class="col-sm-9"><input type="number" name="etage" th:value="${etage}" placeholder="Entrer numero d'étage"  size ="10" required="required"/></div>           
+            </div>    
+             
+           <br />  
+           <button class="btn btn-primary" type="submit" style="margin-left:40px ;" onclick="return Positive();"><span class="glyphicon glyphicon-ok" ></span>  Valider</button>   
+            <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span>  Annuler</button>   
+            
+            <br /><br /><br /><br /> <br />
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>         
+  </div>    
+ 
+  <div class="col-md-5">         
+    <div class="panel panel-primary" >
+      <div class="panel-heading">Lier des locaux techniques</div>
+       <div class="panel-body"> 
+                 
+          <form  th:action="@{/LierLocaux}"  method="get" class="form-horizontal" name="formLier" > 
+
+ <!--            <div class="form-group">
+              <label class="control-label col-sm-5">Bâtiment </label>
+               <div class="col-sm-7">
+                 <select name="batiment" onchange="">               
+                    <option th:each=" batiment:${collBat}" th:text="${batiment.Denomination}"  ></option>   
+		        </select>          
+		      </div>            
+		    </div>  -->
+		            
+            <div class="form-group">
+              <label class="control-label col-sm-5">Locale N°1 </label>
+               <div class="col-sm-7">
+                 <select name="locale1">               
+                    <option th:each=" local:${collecLocaux}" th:text="${local.Nom}" ></option>      
+                </select> 
+		      </div>            
+		    </div>   
+		    
+           <div class="form-group">
+              <label class="control-label col-sm-5">Locale N°2 </label>
+               <div class="col-sm-7">
+                 <select name="locale2" >               
+                    <option th:each=" local:${collecLocaux}" th:text="${local.Nom}" ></option>       
+                </select>
+		      </div>            
+		    </div> 
+		              
+          <div class="form-group">
+            <label class="control-label col-sm-5" >Distance de liaison </label>
+            <div class="col-sm-7"><input type="number" name="dist" th:value="${dist}" placeholder="Entrer la distance"  size ="27" /></div>           
+          </div>   
+          
+          <div class="form-group">
+            <label class="control-label col-sm-5" >Type de liaison </label>
+            <div class="col-sm-7"><input type="text" name="liaison" th:value="${liaison}" placeholder="Entrer le type"  size ="20" /></div>           
+          </div>     
+            
+          <div class="form-group">
+            <label class="control-label col-sm-5" >Nombre de brins </label>
+            <div class="col-sm-7"><input type="number" name="brins" th:value="${brins}" placeholder="Entrer nombre de brins"  size ="20" /></div>           
+          </div>     
+                     	               
+           <button class="btn btn-primary" type="submit" onclick="return VerifierValPositive();"><span class="glyphicon glyphicon-ok"></span> Lier</button> 
+           <button class="btn btn-primary" type="reset" ><span class="glyphicon glyphicon-remove"></span> Annuler</button>   
+             
+         </form>  
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div>
+     </div>
+    </div>        
+  </div>     
+  
+  
+    <div class="col-md-7"> 
+          
+     <div class="panel panel-primary" th:if="${local}">
+      <div class="panel-heading">Détails sur un local technique</div>
+       <div class="panel-body">
+        <div>
+         <label class="cl">Nom de local:</label>
+         <label th:text="${local.Nom}"></label>
+       </div>    
+       
+       <div>
+         <label class="cl">Batîment  :</label>
+         <label th:text="${local.batiment.Denomination}"></label>   
+       </div>   
+
+       <div>
+         <label class="cl">Etage  :</label>
+         <label th:text="${local.Etage}"></label>   
+       </div>  
+                      
+       <div>
+         <label class="cl">Nombre de switchs  :</label>
+         <label th:text="${nbre}"></label>     
+       </div>  
+       <div>
+         <label class="cl">Nombre de connections  :</label>
+         <label th:text="${nbreConn}"></label>     
+       </div>  
+                   
+      <div  class="text-danger" th:if="${Exception}" th:text="${Exception.message}"> </div> 
+      
+       <br/>  <br/>  <br/>  <br/>  <br/>  <br/> 
+     </div>
+    </div>   
+   
+ </div>   
+  
+ </div>
+</body>
+</html>
